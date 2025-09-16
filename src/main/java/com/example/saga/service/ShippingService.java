@@ -7,7 +7,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class ShippingService {
     public void ship(Order order) {
-        // business logic for shipping
+        order.addHistory("Arranging shipment");
+        if (order.hasTag("fail-shipping")) {
+            throw new IllegalStateException("Shipping provider error");
+        }
         order.setStatus(OrderStatus.SHIPPED);
+        order.addHistory("Shipment booked");
+    }
+
+    public void cancelShipment(Order order) {
+        order.addHistory("Shipment cancelled");
     }
 }

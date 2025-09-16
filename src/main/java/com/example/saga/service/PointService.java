@@ -7,7 +7,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class PointService {
     public void earnPoints(Order order) {
-        // business logic for earning points
+        order.addHistory("Earning loyalty points");
+        if (order.hasTag("fail-points")) {
+            throw new IllegalStateException("Point service unavailable");
+        }
         order.setStatus(OrderStatus.POINTS_EARNED);
+        order.addHistory("Points granted");
+    }
+
+    public void revertPoints(Order order) {
+        order.addHistory("Points reverted");
     }
 }
