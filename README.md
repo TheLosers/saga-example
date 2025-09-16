@@ -1,13 +1,13 @@
 # saga-example
 
-This project demonstrates an order processing workflow **without** the Saga pattern. It serves as a baseline for later examples that apply the orchestration and choreography Saga patterns.
+This project demonstrates an order processing workflow using the **choreography Saga pattern** implemented with Spring's application events. Each service reacts to domain events and publishes a new event to trigger the next step, allowing the workflow to progress without a central orchestrator.
 
 ## Workflow
-1. Order is created.
-2. Payment is processed.
-3. Shipment is arranged.
-4. Points are earned.
-5. Order is completed.
+1. `OrderService` publishes an `OrderCreatedEvent` when an order is placed.
+2. `PaymentService` marks the order as paid and emits a `PaymentCompletedEvent`.
+3. `ShippingService` schedules shipment and raises a `ShipmentScheduledEvent`.
+4. `PointService` assigns reward points and publishes a `PointsEarnedEvent`.
+5. `OrderService` listens for the `PointsEarnedEvent` and completes the order.
 
 ## Running
 Build and run using Maven:

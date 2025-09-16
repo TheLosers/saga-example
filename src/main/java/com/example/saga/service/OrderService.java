@@ -1,27 +1,30 @@
 package com.example.saga.service;
 
+import com.example.saga.event.OrderCreatedEvent;
+import com.example.saga.event.PointsEarnedEvent;
 import com.example.saga.order.Order;
 import com.example.saga.order.OrderStatus;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
-    private final PaymentService paymentService;
-    private final ShippingService shippingService;
-    private final PointService pointService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public OrderService(PaymentService paymentService, ShippingService shippingService, PointService pointService) {
-        this.paymentService = paymentService;
-        this.shippingService = shippingService;
-        this.pointService = pointService;
+    public OrderService(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
     }
 
     public Order placeOrder(String orderId) {
         Order order = new Order(orderId);
-        paymentService.pay(order);
-        shippingService.ship(order);
-        pointService.earnPoints(order);
-        order.setStatus(OrderStatus.COMPLETED);
+        eventPublisher.publishEvent(new OrderCreatedEvent(order));
         return order;
+    }
+
+    @EventListener
+    public void onPointsEarned(PointsEarnedEvent event) {
+        Order order = event.order();
+        order.setStatus(OrderStatus.COMPLETED);
     }
 }
