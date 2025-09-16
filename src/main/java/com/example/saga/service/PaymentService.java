@@ -7,7 +7,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class PaymentService {
     public void pay(Order order) {
-        // business logic for payment processing
+        order.addHistory("Processing payment");
+        if (order.hasTag("fail-payment")) {
+            throw new IllegalStateException("Payment was declined");
+        }
         order.setStatus(OrderStatus.PAID);
+        order.addHistory("Payment completed");
+    }
+
+    public void refund(Order order) {
+        order.addHistory("Payment refunded");
     }
 }

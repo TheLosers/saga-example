@@ -1,27 +1,18 @@
 package com.example.saga.service;
 
+import com.example.saga.orchestration.OrderSagaOrchestrator;
 import com.example.saga.order.Order;
-import com.example.saga.order.OrderStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
-    private final PaymentService paymentService;
-    private final ShippingService shippingService;
-    private final PointService pointService;
+    private final OrderSagaOrchestrator orchestrator;
 
-    public OrderService(PaymentService paymentService, ShippingService shippingService, PointService pointService) {
-        this.paymentService = paymentService;
-        this.shippingService = shippingService;
-        this.pointService = pointService;
+    public OrderService(OrderSagaOrchestrator orchestrator) {
+        this.orchestrator = orchestrator;
     }
 
     public Order placeOrder(String orderId) {
-        Order order = new Order(orderId);
-        paymentService.pay(order);
-        shippingService.ship(order);
-        pointService.earnPoints(order);
-        order.setStatus(OrderStatus.COMPLETED);
-        return order;
+        return orchestrator.execute(orderId);
     }
 }

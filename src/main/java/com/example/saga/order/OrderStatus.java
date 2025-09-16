@@ -5,5 +5,6 @@ public enum OrderStatus {
     PAID,
     SHIPPED,
     POINTS_EARNED,
-    COMPLETED
+    COMPLETED,
+    CANCELLED
 }
